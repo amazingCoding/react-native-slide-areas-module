@@ -1,47 +1,82 @@
 import * as React from 'react';
 import { StyleSheet, View, StatusBar, TouchableOpacity, Text, SafeAreaView, Platform, ScrollView } from 'react-native';
-import SlideAreasModule from 'slide-areas-module';
+import SlideBar from 'slide-areas-module';
 
 export default function App() {
   const [show, setShow] = React.useState(true)
+  const slideBar = React.useMemo(() => SlideBar.getInstance(), [])
+  const isAndroid = Platform.OS === 'android'
   React.useEffect(() => {
-    SlideAreasModule?.setBar('dark', null, 'light', '#ff00ff', false)
+    if (isAndroid) slideBar.setBar({ navigationBarColor: '#ff00ff', navigationBarTheme: 'light' })
+    else slideBar.setBar()
   }, [])
 
   return (
 
     <SafeAreaView style={styles.container}>
-      {Platform.OS === 'android' ? <View style={{ height: StatusBar.currentHeight }}></View> : null}
-      <ScrollView>
-        <Text style={styles.desc}>Once this module is enabled, the SafeAreaView cannot be used properly to avoid the status bar.</Text>
-        <Text style={styles.desc}>Top status bar settings</Text>
-        <TouchableOpacity onPress={() => {
-          SlideAreasModule?.setBar('dark', '#ffffff', 'light', '#ff00ff', false)
-        }} style={styles.btn}><Text style={styles.btnText}>White status bar and dark theme</Text></TouchableOpacity>
-        <TouchableOpacity onPress={() => {
-          SlideAreasModule?.setBar('light', '#000000', 'light', '#ff00ff', false)
-        }} style={styles.btn}><Text style={styles.btnText}>Black status bar and light theme</Text></TouchableOpacity>
-        <TouchableOpacity onPress={() => {
-          SlideAreasModule?.setBar('light', null, 'light', '#ff00ff', false)
-        }} style={styles.btn}><Text style={styles.btnText}>Transparent status bar and light theme</Text></TouchableOpacity>
+      {isAndroid ? <>
+        <View style={{ height: StatusBar.currentHeight }}></View>
+        <ScrollView>
+          <Text style={styles.desc}>Once this module is enabled, the SafeAreaView cannot be used properly to avoid the status bar.</Text>
+          <Text style={styles.desc}>Top status bar settings</Text>
+          <TouchableOpacity onPress={() => {
+            slideBar.setBar({
+              statusBarTheme: 'dark',
+              statusBarColor: '#ffffff'
+            })
+          }} style={styles.btn}><Text style={styles.btnText}>White status bar and dark theme</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => {
+            slideBar.setBar({
+              statusBarTheme: 'light',
+              statusBarColor: '#000000'
+            })
+          }} style={styles.btn}><Text style={styles.btnText}>Black status bar and light theme</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => {
+            slideBar.setBar({
+              statusBarTheme: 'light',
+              statusBarColor: null
+            })
+          }} style={styles.btn}><Text style={styles.btnText}>Transparent status bar and light theme</Text></TouchableOpacity>
 
-        <TouchableOpacity onPress={() => {
-          SlideAreasModule?.setBar('light', null, 'light', '#ff00ff', show)
-          setShow(!show)
-        }} style={styles.btn}><Text style={styles.btnText}>{show ? 'hide' : 'show'} status bar</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => {
+            slideBar.setBar({ hideStatus: show })
+            setShow(!show)
+          }} style={styles.btn}><Text style={styles.btnText}>{show ? 'hide' : 'show'} status bar</Text></TouchableOpacity>
 
-        <Text style={styles.desc}>Bottom navigation bar settings</Text>
-        <TouchableOpacity onPress={() => {
-          SlideAreasModule?.setBar('light', null, 'light', '#000000', false)
-        }} style={styles.btn}><Text style={styles.btnText}>Black navigationBar bar and light theme</Text></TouchableOpacity>
-        <TouchableOpacity onPress={() => {
-          SlideAreasModule?.setBar('light', null, 'dark', '#FFFFFF', false)
-        }} style={styles.btn}><Text style={styles.btnText}>White navigationBar bar and dark theme</Text></TouchableOpacity>
-        <TouchableOpacity onPress={() => {
-          SlideAreasModule?.setBar('light', null, 'light', '#ff00ff', false)
-        }} style={styles.btn}><Text style={styles.btnText}>Same background color as parent element and light theme</Text></TouchableOpacity>
-      </ScrollView>
-
+          <Text style={styles.desc}>Bottom navigation bar settings</Text>
+          <TouchableOpacity onPress={() => {
+            slideBar.setBar({
+              navigationBarTheme: 'light',
+              navigationBarColor: '#000000'
+            })
+          }} style={styles.btn}><Text style={styles.btnText}>Black navigationBar bar and light theme</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => {
+            slideBar.setBar({
+              navigationBarTheme: 'dark',
+              navigationBarColor: '#FFFFFF'
+            })
+          }} style={styles.btn}><Text style={styles.btnText}>White navigationBar bar and dark theme</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => {
+            slideBar.setBar({
+              navigationBarTheme: 'light',
+              navigationBarColor: '#ff00ff'
+            })
+          }} style={styles.btn}><Text style={styles.btnText}>Same background color as parent element and light theme</Text></TouchableOpacity>
+        </ScrollView>
+      </> :
+        <ScrollView>
+          <TouchableOpacity onPress={() => {
+            slideBar.setBar({ statusBarTheme: 'dark' })
+          }} style={styles.btn}><Text style={styles.btnText}>White status bar and dark theme</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => {
+            slideBar.setBar({ statusBarTheme: 'light' })
+          }} style={styles.btn}><Text style={styles.btnText}>Black status bar and light theme</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => {
+            slideBar.setBar({ hideStatus: show })
+            setShow(!show)
+          }} style={styles.btn}><Text style={styles.btnText}>{show ? 'hide' : 'show'} status bar</Text></TouchableOpacity>
+        </ScrollView>
+      }
     </SafeAreaView>
   );
 }
